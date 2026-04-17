@@ -18,10 +18,16 @@ from signal_processor import SignalProcessor
 from detector import Detector
 
 # ─── App Setup ────────────────────────────────────────────────────────────────
-app     = Flask(__name__)
+import os
+frontend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "frontend"))
+app     = Flask(__name__, static_folder=frontend_dir, static_url_path="")
 CORS(app, resources={r"/*": {"origins": "*"}})
 socketio= SocketIO(app, cors_allowed_origins="*", async_mode="threading",
                    logger=False, engineio_logger=False)
+
+@app.route("/")
+def index():
+    return app.send_static_file("index.html")
 
 # ─── Shared State ─────────────────────────────────────────────────────────────
 sdr_mgr   = SDRManager()
